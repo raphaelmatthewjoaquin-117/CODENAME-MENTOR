@@ -1,0 +1,216 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --paper: #f8efe2;
+  --ink: #3b2416;
+  --gold: #c9a227;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255, 214, 153, 0.45), transparent 32%),
+    radial-gradient(circle at 88% 0%, rgba(244, 163, 139, 0.28), transparent 28%),
+    radial-gradient(circle at 80% 90%, rgba(201, 162, 39, 0.18), transparent 30%),
+    linear-gradient(180deg, #fff7ea 0%, #f3e4cf 100%);
+}
+
+.corkboard {
+  background-color: #c4a574;
+  background-image:
+    radial-gradient(rgba(90, 58, 32, 0.18) 1px, transparent 1px),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 40%),
+    repeating-linear-gradient(
+      45deg,
+      rgba(139, 90, 43, 0.08) 0 8px,
+      transparent 8px 16px
+    );
+  background-size: 10px 10px, auto, auto;
+}
+
+.sticky-note {
+  box-shadow:
+    0 12px 20px rgba(80, 40, 10, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.sticky-note-dynamic {
+  position: relative;
+  box-shadow:
+    0 10px 25px rgba(80, 40, 10, 0.25),
+    inset 0 2px 4px rgba(255, 255, 255, 0.7),
+    inset 0 -2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  overflow: visible;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.sticky-note-dynamic:hover {
+  transform: rotate(0deg) scale(1.15) translateY(-8px) !important;
+  box-shadow:
+    0 30px 50px rgba(80, 40, 10, 0.35),
+    inset 0 2px 4px rgba(255, 255, 255, 0.8),
+    0 0 0 3px rgba(255, 255, 255, 0.5);
+  z-index: 10;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+/* Handwritten font for messages */
+.message-text {
+  font-weight: 600;
+  font-size: 1.5rem;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+}
+
+.font-caveat {
+  font-family: var(--font-caveat), cursive;
+}
+
+.font-indie-flower {
+  font-family: var(--font-indie-flower), cursive;
+  font-size: 1.4rem;
+}
+
+.font-permanent-marker {
+  font-family: var(--font-permanent-marker), cursive;
+  font-size: 1.35rem;
+  letter-spacing: 0.03em;
+}
+
+.font-kalam {
+  font-family: var(--font-kalam), cursive;
+  font-weight: 400;
+}
+
+.font-shadows-into-light {
+  font-family: var(--font-shadows-into-light), cursive;
+  font-size: 1.45rem;
+}
+
+/* Corner curl effect - MUCH MORE PROMINENT */
+.corner-curl::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 0 50px 50px;
+  border-color: transparent transparent rgba(0, 0, 0, 0.15) transparent;
+  transition: all 0.3s ease;
+  filter: drop-shadow(-2px -2px 3px rgba(0, 0, 0, 0.1));
+}
+
+.corner-curl::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    rgba(0, 0, 0, 0.05) 40%,
+    rgba(0, 0, 0, 0.12) 100%
+  );
+  transform-origin: bottom right;
+  transition: all 0.3s ease;
+}
+
+.corner-curl:hover::before {
+  border-width: 0 0 65px 65px;
+  border-color: transparent transparent rgba(0, 0, 0, 0.2) transparent;
+}
+
+.corner-curl:hover::after {
+  width: 65px;
+  height: 65px;
+}
+
+@keyframes float-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95) rotate(0deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.float-in {
+  animation: float-in 0.5s ease-out both;
+}
+
+/* Staggered animation for sticky notes */
+.sticky-note-dynamic {
+  opacity: 0;
+  animation: float-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  /* Don't override the transform rotation */
+  animation-fill-mode: none;
+}
+
+.sticky-note-dynamic[style*="transform"] {
+  animation: float-in-opacity 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes float-in-opacity {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Wobble animation for new notes */
+@keyframes wobble {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(1deg); }
+  75% { transform: rotate(-1deg); }
+}
+
+.wobble {
+  animation: wobble 0.5s ease-in-out;
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.toast-in {
+  animation: toast-in 0.28s ease-out both;
+}
+
+@keyframes modal-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-appear {
+  animation: modal-appear 0.3s ease-out both;
+}
