@@ -167,7 +167,10 @@ export default function AdminPage() {
     // Filter by program
     if (programFilter) {
       filtered = filtered.filter(
-        (item) => item.professors?.programs?.code === programFilter
+        (item) =>
+          item.professors?.programs?.code === programFilter ||
+          item.professors?.program_id === programFilter ||
+          item.professors?.programs?.id === programFilter
       );
     }
 

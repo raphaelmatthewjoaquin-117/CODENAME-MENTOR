@@ -47,7 +47,18 @@ export default function StudentPage() {
   }, []);
 
   const filteredProfessors = programId
-    ? professors.filter((professor) => professor.program_id === programId)
+    ? professors.filter((professor) => {
+        if (!professor.program_id) return false;
+        if (professor.program_id === programId) return true;
+        const matchingProg = programs.find(
+          (p) => p.code === programId || p.id === programId
+        );
+        return (
+          matchingProg &&
+          (professor.program_id === matchingProg.code ||
+            professor.program_id === matchingProg.id)
+        );
+      })
     : professors;
 
   const searchedProfessors = filteredProfessors.filter((professor) =>
@@ -289,7 +300,7 @@ export default function StudentPage() {
                 {loadingList ? "Loading programs..." : "All programs"}
               </option>
               {programs.map((program) => (
-                <option key={program.id} value={program.id}>
+                <option key={program.id} value={program.code || program.id}>
                   {program.code} — {program.name}
                 </option>
               ))}
