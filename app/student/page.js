@@ -114,24 +114,24 @@ export default function StudentPage() {
                   />
                 </svg>
               </div>
-              <h2 className="mt-6 text-2xl font-semibold text-amber-950">
+              <h2 className="mt-6 text-2xl font-semibold text-navy-900">
                 Message Sent Successfully!
               </h2>
-              <p className="mt-3 text-amber-900/75">
-                Your appreciation note has been submitted and is awaiting admin approval. 
+              <p className="mt-3 text-navy-600">
+                Your appreciation note has been submitted and is awaiting admin approval.
                 Once approved, it will appear on your professor&apos;s corkboard.
               </p>
               <div className="mt-6 flex w-full gap-3">
                 <button
                   type="button"
                   onClick={() => setShowSuccessModal(false)}
-                  className="flex-1 rounded-2xl bg-amber-900 px-6 py-3 font-semibold text-amber-50 transition hover:bg-amber-800"
+                  className="flex-1 rounded-2xl bg-navy-900 px-6 py-3 font-semibold text-white transition hover:bg-navy-800"
                 >
                   Send Another
                 </button>
                 <Link
                   href="/"
-                  className="flex-1 rounded-2xl bg-white px-6 py-3 text-center font-semibold text-amber-900 ring-1 ring-amber-200 transition hover:bg-amber-50"
+                  className="flex-1 rounded-2xl bg-white px-6 py-3 text-center font-semibold text-navy-900 ring-1 ring-navy-200 transition hover:bg-navy-50"
                 >
                   Go Home
                 </Link>
@@ -141,18 +141,18 @@ export default function StudentPage() {
         </div>
       )}
 
-      <Link href="/" className="text-sm font-medium text-amber-800 hover:underline">
+      <Link href="/" className="text-sm font-medium text-navy-600 hover:underline">
         Back to home
       </Link>
 
-      <section className="mt-8 rounded-3xl bg-white/90 p-8 shadow-xl shadow-amber-900/10 ring-1 ring-amber-200">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-rose-700">
+      <section className="mt-8 rounded-3xl bg-white/90 p-8 shadow-xl shadow-navy-900/10 ring-1 ring-navy-200">
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-yellow-600">
           Student Portal
         </p>
-        <h1 className="mt-3 text-4xl font-semibold text-amber-950">
+        <h1 className="mt-3 text-4xl font-semibold text-navy-900">
           Write a thank-you note
         </h1>
-        <p className="mt-3 text-amber-900/75">
+        <p className="mt-3 text-navy-600">
           Your message waits for a quick review, then appears on your
           professor&apos;s corkboard.
         </p>
@@ -160,7 +160,7 @@ export default function StudentPage() {
         <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
           <div className="relative">
             <label className="block">
-              <span className="mb-2 block text-sm font-semibold text-amber-900">
+              <span className="mb-2 block text-sm font-semibold text-navy-800">
                 Select Professor
               </span>
               <div className="relative">
@@ -181,11 +181,11 @@ export default function StudentPage() {
                         ? "Search for a professor..."
                         : "No professors available yet"
                   }
-                  className="w-full rounded-2xl border border-amber-200 bg-amber-50/60 px-4 py-3 pr-10 outline-none ring-amber-400 transition focus:border-amber-300 focus:bg-white focus:ring-2"
+                  className="w-full rounded-2xl border border-navy-200 bg-navy-50/60 px-4 py-3 pr-10 outline-none ring-gold-400 transition focus:border-navy-300 focus:bg-white focus:ring-2"
                   required={!professorId}
                 />
                 <svg
-                  className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-amber-600"
+                  className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-navy-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -199,9 +199,9 @@ export default function StudentPage() {
                 </svg>
               </div>
               {professorName && (
-                <div className="mt-2 flex items-center gap-2 rounded-xl bg-amber-100 px-3 py-2 text-sm">
+                <div className="mt-2 flex items-center gap-2 rounded-xl bg-gold-50 px-3 py-2 text-sm">
                   <svg
-                    className="h-4 w-4 text-amber-700"
+                    className="h-4 w-4 text-gold-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -213,7 +213,7 @@ export default function StudentPage() {
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                  <span className="font-medium text-amber-900">
+                  <span className="font-medium text-navy-800">
                     Selected: {professorName}
                   </span>
                   <button
@@ -223,7 +223,7 @@ export default function StudentPage() {
                       setProfessorName("");
                       setSearchQuery("");
                     }}
-                    className="ml-auto text-amber-700 hover:text-amber-900"
+                    className="ml-auto text-navy-500 hover:text-navy-800"
                   >
                     <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -244,7 +244,7 @@ export default function StudentPage() {
                   className="fixed inset-0 z-10"
                   onClick={() => setShowDropdown(false)}
                 />
-                <div className="absolute z-20 mt-2 max-h-64 w-full overflow-auto rounded-2xl border border-amber-200 bg-white shadow-xl">
+                <div className="absolute z-20 mt-2 max-h-64 w-full overflow-auto rounded-2xl border border-navy-200 bg-white shadow-xl">
                   {searchedProfessors.map((professor) => (
                     <button
                       key={professor.id}
@@ -255,7 +255,7 @@ export default function StudentPage() {
                         setSearchQuery("");
                         setShowDropdown(false);
                       }}
-                      className="w-full px-4 py-3 text-left text-amber-950 transition hover:bg-amber-50 focus:bg-amber-50 focus:outline-none"
+                      className="w-full px-4 py-3 text-left text-navy-900 transition hover:bg-navy-50 focus:bg-navy-50 focus:outline-none"
                     >
                       <div className="font-medium">{professor.display_name}</div>
                     </button>
@@ -265,14 +265,14 @@ export default function StudentPage() {
             )}
 
             {showDropdown && searchQuery && searchedProfessors.length === 0 && !professorId && (
-              <div className="absolute z-20 mt-2 w-full rounded-2xl border border-amber-200 bg-white p-4 text-center text-sm text-amber-900/70 shadow-xl">
+              <div className="absolute z-20 mt-2 w-full rounded-2xl border border-navy-200 bg-white p-4 text-center text-sm text-navy-600 shadow-xl">
                 No professors found matching &quot;{searchQuery}&quot;
               </div>
             )}
           </div>
 
           <label className="block">
-            <span className="mb-2 block text-sm font-semibold text-amber-900">
+            <span className="mb-2 block text-sm font-semibold text-navy-800">
               College Program (Optional Filter)
             </span>
             <select
@@ -283,7 +283,7 @@ export default function StudentPage() {
                 setProfessorName("");
                 setSearchQuery("");
               }}
-              className="w-full rounded-2xl border border-amber-200 bg-amber-50/60 px-4 py-3 outline-none ring-amber-400 focus:ring-2"
+              className="w-full rounded-2xl border border-navy-200 bg-navy-50/60 px-4 py-3 outline-none ring-gold-400 focus:ring-2"
             >
               <option value="">
                 {loadingList ? "Loading programs..." : "All programs"}
@@ -297,7 +297,7 @@ export default function StudentPage() {
           </label>
 
           <label className="block">
-            <span className="mb-2 block text-sm font-semibold text-amber-900">
+            <span className="mb-2 block text-sm font-semibold text-navy-800">
               Your Name
             </span>
             <input
@@ -306,22 +306,22 @@ export default function StudentPage() {
               disabled={anonymous}
               onChange={(event) => setSenderName(event.target.value)}
               placeholder={anonymous ? "Anonymous" : "e.g. Maya from CS 201"}
-              className="w-full rounded-2xl border border-amber-200 bg-amber-50/60 px-4 py-3 outline-none ring-amber-400 focus:ring-2 disabled:bg-stone-100 disabled:text-stone-400"
+              className="w-full rounded-2xl border border-navy-200 bg-navy-50/60 px-4 py-3 outline-none ring-gold-400 focus:ring-2 disabled:bg-stone-100 disabled:text-stone-400"
             />
           </label>
 
-          <label className="flex items-center gap-3 text-sm font-medium text-amber-900">
+          <label className="flex items-center gap-3 text-sm font-medium text-navy-800">
             <input
               type="checkbox"
               checked={anonymous}
               onChange={(event) => setAnonymous(event.target.checked)}
-              className="h-4 w-4 accent-amber-800"
+              className="h-4 w-4 accent-navy-800"
             />
             Submit anonymously
           </label>
 
           <label className="block">
-            <span className="mb-2 block text-sm font-semibold text-amber-900">
+            <span className="mb-2 block text-sm font-semibold text-navy-800">
               Message
             </span>
             <textarea
@@ -329,7 +329,7 @@ export default function StudentPage() {
               onChange={(event) => setMessage(event.target.value)}
               rows={6}
               placeholder="Thank you for the patience, the late office hours, and the way you made hard ideas feel possible."
-              className="w-full resize-y rounded-2xl border border-amber-200 bg-amber-50/60 px-4 py-3 outline-none ring-amber-400 focus:ring-2"
+              className="w-full resize-y rounded-2xl border border-navy-200 bg-navy-50/60 px-4 py-3 outline-none ring-gold-400 focus:ring-2"
               required
             />
           </label>
@@ -343,7 +343,7 @@ export default function StudentPage() {
           <button
             type="submit"
             disabled={status === "sending"}
-            className="w-full rounded-2xl bg-amber-900 px-4 py-3 font-semibold text-amber-50 transition hover:bg-amber-800 disabled:opacity-60"
+            className="w-full rounded-2xl bg-yellow-400 px-4 py-3 font-semibold text-navy-900 transition hover:bg-yellow-300 disabled:opacity-60"
           >
             {status === "sending" ? "Sending..." : "Send appreciation"}
           </button>

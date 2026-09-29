@@ -3,9 +3,11 @@
 @tailwind utilities;
 
 :root {
-  --paper: #f8efe2;
-  --ink: #3b2416;
+  --navy: #0a1628;
+  --navy-light: #1a2744;
   --gold: #c9a227;
+  --gold-light: #d4a017;
+  --surface: #eef2f7;
 }
 
 html,
@@ -14,12 +16,12 @@ body {
 }
 
 body {
-  color: var(--ink);
+  color: var(--navy);
   background:
-    radial-gradient(circle at 12% 8%, rgba(255, 214, 153, 0.45), transparent 32%),
-    radial-gradient(circle at 88% 0%, rgba(244, 163, 139, 0.28), transparent 28%),
-    radial-gradient(circle at 80% 90%, rgba(201, 162, 39, 0.18), transparent 30%),
-    linear-gradient(180deg, #fff7ea 0%, #f3e4cf 100%);
+    radial-gradient(circle at 12% 8%, rgba(201, 162, 39, 0.12), transparent 32%),
+    radial-gradient(circle at 88% 0%, rgba(26, 39, 68, 0.08), transparent 28%),
+    radial-gradient(circle at 80% 90%, rgba(201, 162, 39, 0.06), transparent 30%),
+    linear-gradient(180deg, #eef2f7 0%, #dfe6ef 100%);
 }
 
 .corkboard {
@@ -37,14 +39,14 @@ body {
 
 .sticky-note {
   box-shadow:
-    0 12px 20px rgba(80, 40, 10, 0.18),
+    0 12px 20px rgba(10, 22, 40, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
 .sticky-note-dynamic {
   position: relative;
   box-shadow:
-    0 10px 25px rgba(80, 40, 10, 0.25),
+    0 10px 25px rgba(10, 22, 40, 0.25),
     inset 0 2px 4px rgba(255, 255, 255, 0.7),
     inset 0 -2px 4px rgba(0, 0, 0, 0.05);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -56,11 +58,11 @@ body {
 .sticky-note-dynamic:hover {
   transform: rotate(0deg) scale(1.15) translateY(-8px) !important;
   box-shadow:
-    0 30px 50px rgba(80, 40, 10, 0.35),
+    0 30px 50px rgba(10, 22, 40, 0.35),
     inset 0 2px 4px rgba(255, 255, 255, 0.8),
-    0 0 0 3px rgba(255, 255, 255, 0.5);
+    0 0 0 3px rgba(201, 162, 39, 0.4);
   z-index: 10;
-  border: 1px solid rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(201, 162, 39, 0.3);
 }
 
 /* Handwritten font for messages */
@@ -106,7 +108,7 @@ body {
   height: 0;
   border-style: solid;
   border-width: 0 0 50px 50px;
-  border-color: transparent transparent rgba(0, 0, 0, 0.15) transparent;
+  border-color: transparent transparent rgba(10, 22, 40, 0.15) transparent;
   transition: all 0.3s ease;
   filter: drop-shadow(-2px -2px 3px rgba(0, 0, 0, 0.1));
 }
@@ -130,7 +132,7 @@ body {
 
 .corner-curl:hover::before {
   border-width: 0 0 65px 65px;
-  border-color: transparent transparent rgba(0, 0, 0, 0.2) transparent;
+  border-color: transparent transparent rgba(10, 22, 40, 0.2) transparent;
 }
 
 .corner-curl:hover::after {

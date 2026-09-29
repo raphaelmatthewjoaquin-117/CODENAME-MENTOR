@@ -22,7 +22,7 @@ const PUSHPIN_COLORS = ["#ef4444", "#3b82f6", "#eab308", "#8b5cf6", "#10b981"];
 
 const FONT_CLASSES = [
   "font-caveat",
-  "font-indie-flower", 
+  "font-indie-flower",
   "font-permanent-marker",
   "font-kalam",
   "font-shadows-into-light",
@@ -45,14 +45,6 @@ function getRandomValue(min, max) {
 
 function getRandomFloat(min, max) {
   return Math.random() * (max - min) + min;
-}
-
-// Helper function to get consistent random values based on note id (OLD - not used anymore)
-function getRandomForNote(noteId, min, max) {
-  const hash = noteId.split('').reduce((acc, char) => {
-    return char.charCodeAt(0) + ((acc << 5) - acc);
-  }, 0);
-  return min + (Math.abs(hash) % (max - min + 1));
 }
 
 function Pushpin({ color, offsetX }) {
@@ -82,11 +74,11 @@ function Pushpin({ color, offsetX }) {
 function TapeStrip({ rotation }) {
   return (
     <div
-      className="absolute -top-4 left-1/2 h-8 w-24 -translate-x-1/2 bg-gradient-to-b from-amber-50/60 to-amber-100/50 shadow-md"
+      className="absolute -top-4 left-1/2 h-8 w-24 -translate-x-1/2 bg-gradient-to-b from-gold-100/60 to-gold-200/50 shadow-md"
       style={{
         transform: `translateX(-50%) rotate(${rotation}deg)`,
         backdropFilter: "blur(2px)",
-        border: "1px solid rgba(217, 119, 6, 0.1)",
+        border: "1px solid rgba(201, 162, 39, 0.2)",
       }}
     />
   );
@@ -133,11 +125,11 @@ export default function ProfessorPage() {
         setBoardError(error.message);
       } else {
         const messagesData = data || [];
-        
+
         // Shuffle messages for random placement each time
         const shuffledMessages = shuffleArray(messagesData);
         setMessages(shuffledMessages);
-        
+
         // Generate random styles for each note
         const styles = {};
         shuffledMessages.forEach((note) => {
@@ -169,14 +161,17 @@ export default function ProfessorPage() {
       return;
     }
 
+    const trimmedInput = username.trim();
+
+    // Try to find professor by username or email
     const { data, error } = await supabase
       .from("professors")
-      .select("id, username, display_name, password")
-      .eq("username", username.trim())
+      .select("id, username, email, display_name, password")
+      .or(`username.eq.${trimmedInput},email.eq.${trimmedInput}`)
       .maybeSingle();
 
     if (error || !data || data.password !== password) {
-      setLoginError("Username or password did not match.");
+      setLoginError("Username/email or password did not match.");
       return;
     }
 
@@ -211,25 +206,25 @@ export default function ProfessorPage() {
   if (!session) {
     return (
       <main className="mx-auto flex min-h-screen max-w-md flex-col px-6 py-10">
-        <Link href="/" className="text-sm font-medium text-amber-800 hover:underline">
+        <Link href="/" className="text-sm font-medium text-navy-600 hover:underline">
           Back to home
         </Link>
-        <section className="mt-16 rounded-3xl bg-white/90 p-8 shadow-xl ring-1 ring-amber-200">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-700">
+        <section className="mt-16 rounded-3xl bg-white/90 p-8 shadow-xl ring-1 ring-navy-200">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-yellow-600">
             Professor Portal
           </p>
-          <h1 className="mt-3 text-3xl font-semibold text-amber-950">
+          <h1 className="mt-3 text-3xl font-semibold text-navy-900">
             Welcome Professor
           </h1>
-          <p className="mt-2 text-amber-900/70">
-            Use the username and password created for you.
+          <p className="mt-2 text-navy-600">
+            Use your school email/username and password created for you.
           </p>
           <form className="mt-8 space-y-4" onSubmit={handleLogin}>
             <input
               value={username}
               onChange={(event) => setUsername(event.target.value)}
-              placeholder="Username"
-              className="w-full rounded-2xl border border-amber-200 bg-amber-50/70 px-4 py-3 outline-none ring-amber-400 focus:ring-2"
+              placeholder="Username or Email"
+              className="w-full rounded-2xl border border-navy-200 bg-navy-50/70 px-4 py-3 outline-none ring-gold-400 focus:ring-2"
               required
             />
             <input
@@ -237,7 +232,7 @@ export default function ProfessorPage() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder="Password"
-              className="w-full rounded-2xl border border-amber-200 bg-amber-50/70 px-4 py-3 outline-none ring-amber-400 focus:ring-2"
+              className="w-full rounded-2xl border border-navy-200 bg-navy-50/70 px-4 py-3 outline-none ring-gold-400 focus:ring-2"
               required
             />
             {loginError ? (
@@ -245,7 +240,7 @@ export default function ProfessorPage() {
             ) : null}
             <button
               type="submit"
-              className="w-full rounded-2xl bg-amber-900 py-3 font-semibold text-amber-50 hover:bg-amber-800"
+              className="w-full rounded-2xl bg-yellow-400 py-3 font-semibold text-navy-900 transition hover:bg-yellow-300"
             >
               Open my corkboard
             </button>
@@ -259,18 +254,18 @@ export default function ProfessorPage() {
     <main className="mx-auto min-h-screen max-w-6xl px-6 py-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <Link href="/" className="text-sm font-medium text-amber-900/70 hover:underline">
+          <Link href="/" className="text-sm font-medium text-navy-500 hover:underline">
             Home
           </Link>
-          <h1 className="mt-2 text-4xl font-semibold text-amber-950">{greeting}</h1>
-          <p className="mt-2 text-amber-900/70">
+          <h1 className="mt-2 text-4xl font-semibold text-navy-900">{greeting}</h1>
+          <p className="mt-2 text-navy-600">
             Only approved notes written for you appear here.
           </p>
         </div>
         <button
           type="button"
           onClick={handleLogout}
-          className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-amber-900 shadow-sm ring-1 ring-amber-200 hover:bg-amber-50"
+          className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-navy-900 shadow-sm ring-1 ring-navy-200 hover:bg-navy-50"
         >
           Log Out
         </button>
@@ -292,7 +287,7 @@ export default function ProfessorPage() {
             {messages.map((note, index) => {
               const style = noteStyles[note.id];
               if (!style) return null; // Wait for styles to load
-              
+
               return (
                 <article
                   key={note.id}
@@ -307,14 +302,14 @@ export default function ProfessorPage() {
                   ) : (
                     <TapeStrip rotation={style.tapeRotation} />
                   )}
-                  
-                  <p className="text-base font-bold uppercase tracking-wide text-amber-950/70">
+
+                  <p className="text-base font-bold uppercase tracking-wide text-navy-800/70">
                     {note.sender_name || "Anonymous"}
                   </p>
-                  <p className={`message-text mt-4 whitespace-pre-wrap text-amber-950 break-words ${style.fontClass}`}>
+                  <p className={`message-text mt-4 whitespace-pre-wrap text-navy-950 break-words ${style.fontClass}`}>
                     {note.message_content}
                   </p>
-                  
+
                   {/* Random doodles - BIGGER AND MORE VISIBLE */}
                   {index % 4 === 0 && (
                     <svg
@@ -327,10 +322,10 @@ export default function ProfessorPage() {
                       <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                     </svg>
                   )}
-                  
+
                   {index % 5 === 0 && (
                     <svg
-                      className="absolute top-4 right-4 text-amber-600 opacity-35"
+                      className="absolute top-4 right-4 text-gold-600 opacity-35"
                       width="32"
                       height="32"
                       viewBox="0 0 24 24"
@@ -339,10 +334,10 @@ export default function ProfessorPage() {
                       <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
                     </svg>
                   )}
-                  
+
                   {index % 6 === 0 && (
                     <svg
-                      className="absolute bottom-3 left-3 text-sky-600 opacity-30"
+                      className="absolute bottom-3 left-3 text-navy-600 opacity-30"
                       width="28"
                       height="28"
                       viewBox="0 0 24 24"

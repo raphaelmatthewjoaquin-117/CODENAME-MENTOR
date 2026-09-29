@@ -33,7 +33,7 @@ function statusStyles(status) {
   if (status === "rejected") {
     return "bg-rose-100 text-rose-800";
   }
-  return "bg-amber-100 text-amber-800";
+  return "bg-gold-100 text-gold-700";
 }
 
 export default function AdminPage() {
@@ -153,24 +153,24 @@ export default function AdminPage() {
 
   const visibleMessages = useMemo(() => {
     let filtered = messages;
-    
+
     // Filter by status
     if (filter !== "all") {
       filtered = filtered.filter((item) => item.status === filter);
     }
-    
+
     // Filter by professor
     if (professorFilter) {
       filtered = filtered.filter((item) => item.professor_id === professorFilter);
     }
-    
+
     // Filter by program
     if (programFilter) {
       filtered = filtered.filter(
         (item) => item.professors?.programs?.code === programFilter
       );
     }
-    
+
     return filtered;
   }, [filter, messages, professorFilter, programFilter]);
 
@@ -226,12 +226,12 @@ export default function AdminPage() {
   if (!unlocked) {
     return (
       <main className="mx-auto flex min-h-screen max-w-md flex-col px-6 py-10">
-        <Link href="/" className="text-sm font-medium text-amber-800 hover:underline">
+        <Link href="/" className="text-sm font-medium text-navy-600 hover:underline">
           Back to home
         </Link>
-        <section className="mt-16 rounded-3xl bg-white/90 p-8 shadow-xl ring-1 ring-amber-200">
-          <h1 className="text-3xl font-semibold text-amber-950">Admin desk</h1>
-          <p className="mt-2 text-amber-900/70">
+        <section className="mt-16 rounded-3xl bg-white/90 p-8 shadow-xl ring-1 ring-navy-200">
+          <h1 className="text-3xl font-semibold text-navy-900">Admin desk</h1>
+          <p className="mt-2 text-navy-600">
             Enter the staff password to review pending and approved notes.
           </p>
           <form className="mt-6 space-y-4" onSubmit={handleUnlock}>
@@ -240,12 +240,12 @@ export default function AdminPage() {
               value={password}
               onChange={(event) => setPassword(event.target.value)}
               placeholder="Admin password"
-              className="w-full rounded-2xl border border-amber-200 bg-amber-50/70 px-4 py-3 outline-none ring-amber-400 focus:ring-2"
+              className="w-full rounded-2xl border border-navy-200 bg-navy-50/70 px-4 py-3 outline-none ring-gold-400 focus:ring-2"
             />
             {authError ? <p className="text-sm text-rose-700">{authError}</p> : null}
             <button
               type="submit"
-              className="w-full rounded-2xl bg-stone-900 py-3 font-semibold text-white"
+              className="w-full rounded-2xl bg-yellow-400 py-3 font-semibold text-navy-900 transition hover:bg-yellow-300"
             >
               Unlock dashboard
             </button>
@@ -264,20 +264,20 @@ export default function AdminPage() {
   return (
     <main className="mx-auto min-h-screen max-w-5xl px-6 py-10">
       {toast ? (
-        <div className="toast-in fixed right-6 top-6 z-50 rounded-2xl bg-amber-950 px-5 py-3 text-sm font-medium text-amber-50 shadow-lg">
+        <div className="toast-in fixed right-6 top-6 z-50 rounded-2xl bg-navy-900 px-5 py-3 text-sm font-medium text-white shadow-lg">
           {toast}
         </div>
       ) : null}
 
       <div className="flex items-center justify-between gap-4">
         <div>
-          <Link href="/" className="text-sm font-medium text-amber-800 hover:underline">
+          <Link href="/" className="text-sm font-medium text-navy-600 hover:underline">
             Home
           </Link>
-          <h1 className="mt-2 text-4xl font-semibold text-amber-950">
+          <h1 className="mt-2 text-4xl font-semibold text-navy-900">
             Message desk
           </h1>
-          <p className="mt-2 text-amber-900/70">
+          <p className="mt-2 text-navy-600">
             Review pending notes, keep approved ones, and delete anything that should not stay on a corkboard.
           </p>
         </div>
@@ -287,7 +287,7 @@ export default function AdminPage() {
             sessionStorage.removeItem(ADMIN_SESSION_KEY);
             setUnlocked(false);
           }}
-          className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-amber-900 ring-1 ring-amber-200"
+          className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-navy-900 ring-1 ring-navy-200"
         >
           Lock
         </button>
@@ -302,8 +302,8 @@ export default function AdminPage() {
               onClick={() => setFilter(item.key)}
               className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
                 filter === item.key
-                  ? "bg-amber-900 text-amber-50"
-                  : "bg-white text-amber-900 ring-1 ring-amber-200 hover:bg-amber-50"
+                  ? "bg-yellow-400 text-navy-950 font-bold shadow-sm"
+                  : "bg-white text-navy-900 ring-1 ring-navy-200 hover:bg-navy-50"
               }`}
             >
               {item.label}
@@ -316,7 +316,7 @@ export default function AdminPage() {
         {/* Professor Filter */}
         <div className="relative">
           <label className="block">
-            <span className="mb-2 block text-sm font-semibold text-amber-900">
+            <span className="mb-2 block text-sm font-semibold text-navy-800">
               Filter by Professor
             </span>
             <div className="relative">
@@ -329,10 +329,10 @@ export default function AdminPage() {
                 }}
                 onFocus={() => setShowProfessorDropdown(true)}
                 placeholder="Search professors..."
-                className="w-full rounded-2xl border border-amber-200 bg-white px-4 py-2.5 pr-10 text-sm outline-none ring-amber-400 transition focus:border-amber-300 focus:ring-2"
+                className="w-full rounded-2xl border border-navy-200 bg-white px-4 py-2.5 pr-10 text-sm outline-none ring-gold-400 transition focus:border-navy-300 focus:ring-2"
               />
               <svg
-                className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-amber-600"
+                className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-navy-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -346,9 +346,9 @@ export default function AdminPage() {
               </svg>
             </div>
             {professorFilter && (
-              <div className="mt-2 flex items-center gap-2 rounded-xl bg-amber-100 px-3 py-1.5 text-sm">
+              <div className="mt-2 flex items-center gap-2 rounded-xl bg-gold-50 px-3 py-1.5 text-sm">
                 <svg
-                  className="h-4 w-4 text-amber-700"
+                  className="h-4 w-4 text-gold-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -360,7 +360,7 @@ export default function AdminPage() {
                     d="M5 13l4 4L19 7"
                   />
                 </svg>
-                <span className="font-medium text-amber-900">
+                <span className="font-medium text-navy-800">
                   {allProfessors.find((p) => p.id === professorFilter)?.name}
                 </span>
                 <button
@@ -369,7 +369,7 @@ export default function AdminPage() {
                     setProfessorFilter("");
                     setSearchQuery("");
                   }}
-                  className="ml-auto text-amber-700 hover:text-amber-900"
+                  className="ml-auto text-navy-500 hover:text-navy-800"
                 >
                   <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -390,7 +390,7 @@ export default function AdminPage() {
                 className="fixed inset-0 z-10"
                 onClick={() => setShowProfessorDropdown(false)}
               />
-              <div className="absolute z-20 mt-2 max-h-64 w-full overflow-auto rounded-2xl border border-amber-200 bg-white shadow-xl">
+              <div className="absolute z-20 mt-2 max-h-64 w-full overflow-auto rounded-2xl border border-navy-200 bg-white shadow-xl">
                 {searchedProfessors.map((professor) => (
                   <button
                     key={professor.id}
@@ -400,11 +400,11 @@ export default function AdminPage() {
                       setSearchQuery("");
                       setShowProfessorDropdown(false);
                     }}
-                    className="w-full px-4 py-2.5 text-left transition hover:bg-amber-50 focus:bg-amber-50 focus:outline-none"
+                    className="w-full px-4 py-2.5 text-left transition hover:bg-navy-50 focus:bg-navy-50 focus:outline-none"
                   >
-                    <div className="font-medium text-amber-950">{professor.name}</div>
+                    <div className="font-medium text-navy-900">{professor.name}</div>
                     {professor.program && (
-                      <div className="text-xs text-amber-700">
+                      <div className="text-xs text-navy-500">
                         {professor.program.code} — {professor.program.name}
                       </div>
                     )}
@@ -415,7 +415,7 @@ export default function AdminPage() {
           )}
 
           {showProfessorDropdown && searchQuery && searchedProfessors.length === 0 && !professorFilter && (
-            <div className="absolute z-20 mt-2 w-full rounded-2xl border border-amber-200 bg-white p-4 text-center text-sm text-amber-900/70 shadow-xl">
+            <div className="absolute z-20 mt-2 w-full rounded-2xl border border-navy-200 bg-white p-4 text-center text-sm text-navy-600 shadow-xl">
               No professors found matching &quot;{searchQuery}&quot;
             </div>
           )}
@@ -424,13 +424,13 @@ export default function AdminPage() {
         {/* Program Filter */}
         <div>
           <label className="block">
-            <span className="mb-2 block text-sm font-semibold text-amber-900">
+            <span className="mb-2 block text-sm font-semibold text-navy-800">
               Filter by Program
             </span>
             <select
               value={programFilter}
               onChange={(event) => setProgramFilter(event.target.value)}
-              className="w-full rounded-2xl border border-amber-200 bg-white px-4 py-2.5 text-sm outline-none ring-amber-400 transition focus:border-amber-300 focus:ring-2"
+              className="w-full rounded-2xl border border-navy-200 bg-white px-4 py-2.5 text-sm outline-none ring-gold-400 transition focus:border-navy-300 focus:ring-2"
             >
               <option value="">All programs</option>
               {allPrograms.map((program) => (
@@ -444,7 +444,7 @@ export default function AdminPage() {
             <button
               type="button"
               onClick={() => setProgramFilter("")}
-              className="mt-2 text-sm font-medium text-amber-700 hover:text-amber-900 hover:underline"
+              className="mt-2 text-sm font-medium text-navy-500 hover:text-navy-800 hover:underline"
             >
               Clear program filter
             </button>
@@ -464,24 +464,24 @@ export default function AdminPage() {
 
       <section className="mt-8 grid gap-4">
         {visibleMessages.length === 0 ? (
-          <div className="rounded-3xl bg-white/80 p-8 text-amber-900/70 ring-1 ring-amber-200">
+          <div className="rounded-3xl bg-white/80 p-8 text-navy-600 ring-1 ring-navy-200">
             No notes in this list yet.
           </div>
         ) : (
           visibleMessages.map((item) => (
             <article
               key={item.id}
-              className="rounded-3xl bg-white/90 p-6 shadow-sm ring-1 ring-amber-200"
+              className="rounded-3xl bg-white/90 p-6 shadow-sm ring-1 ring-navy-200"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-widest text-amber-700">
+                  <p className="text-sm font-semibold uppercase tracking-widest text-gold-600">
                     For {item.professors?.display_name || "Unknown professor"}
                     {item.professors?.programs?.code
                       ? ` · ${item.professors.programs.code}`
                       : ""}
                   </p>
-                  <p className="mt-1 text-sm text-amber-900/70">
+                  <p className="mt-1 text-sm text-navy-600">
                     From {item.sender_name || "Anonymous"}
                   </p>
                   <span
@@ -512,13 +512,13 @@ export default function AdminPage() {
                   <button
                     type="button"
                     onClick={() => deleteMessage(item.id)}
-                    className="rounded-full bg-stone-800 px-4 py-2 text-sm font-semibold text-white hover:bg-stone-700"
+                    className="rounded-full bg-navy-800 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700"
                   >
                     Delete
                   </button>
                 </div>
               </div>
-              <p className="mt-4 whitespace-pre-wrap text-lg leading-7 text-amber-950">
+              <p className="mt-4 whitespace-pre-wrap text-lg leading-7 text-navy-900">
                 {item.message_content}
               </p>
             </article>
