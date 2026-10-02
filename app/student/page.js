@@ -316,7 +316,7 @@ export default function StudentPage() {
               value={senderName}
               disabled={anonymous}
               onChange={(event) => setSenderName(event.target.value)}
-              placeholder={anonymous ? "Anonymous" : "e.g. Maya from CS 201"}
+              placeholder={anonymous ? "Anonymous" : "e.g. Matthew from BS-IT 4th yr"}
               className="w-full rounded-2xl border border-navy-200 bg-navy-50/60 px-4 py-3 outline-none ring-gold-400 focus:ring-2 disabled:bg-stone-100 disabled:text-stone-400"
             />
           </label>

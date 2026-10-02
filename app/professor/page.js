@@ -259,7 +259,7 @@ export default function ProfessorPage() {
           </Link>
           <h1 className="mt-2 text-4xl font-semibold text-navy-900">{greeting}</h1>
           <p className="mt-2 text-navy-600">
-            Only approved notes written for you appear here.
+            Here are messages left for you by your grateful students.
           </p>
         </div>
         <button
