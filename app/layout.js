@@ -39,7 +39,7 @@ const shadowsIntoLight = Shadows_Into_Light({
 });
 
 export const metadata = {
-  title: "Teacher's Day Appreciation Board",
+  title: "Professor's Day Appreciation Board",
   description:
     "A virtual bulletin board where students send warm notes and professors collect them.",
 };

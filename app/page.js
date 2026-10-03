@@ -10,7 +10,7 @@ export default function HomePage() {
 
       <header className="relative z-10 flex items-center justify-between">
         <p className="text-sm font-semibold tracking-[0.2em] text-navy-600">
-          TEACHERS DAY
+           PROFESSOR'S DAY
         </p>
         <Link
           href="/admin"
@@ -26,11 +26,11 @@ export default function HomePage() {
             A digital corkboard of gratitude
           </p>
           <h1 className="max-w-xl text-5xl font-semibold leading-tight text-navy-900 sm:text-6xl">
-            Thank the teachers who shaped this year.
+            Thank the professors who shaped this year.
           </h1>
           <p className="mt-6 max-w-xl text-lg leading-8 text-navy-600">
             Students leave a note. Professors open a private board of colorful
-            sticky notes. Simple, warm, and made for Teacher&apos;s Day.
+            sticky notes. Simple, warm, and made for  Professor&apos;s Day.
           </p>
         </div>
 
