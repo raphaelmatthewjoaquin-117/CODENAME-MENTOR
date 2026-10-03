@@ -6,7 +6,7 @@ import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 const ADMIN_SESSION_KEY = "teachersday_admin";
 const MESSAGE_SELECT =
-  "id, sender_name, message_content, status, created_at, professor_id, professors(display_name, programs(code, name))";
+  "id, sender_name, message_content, image_url, status, created_at, professor_id, professors(display_name)";
 
 function playDing() {
   try {
@@ -48,6 +48,7 @@ export default function AdminPage() {
   const toastTimer = useRef(null);
   const [professorFilter, setProfessorFilter] = useState("");
   const [programFilter, setProgramFilter] = useState("");
+  const [professorPrograms, setProfessorPrograms] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
   const [showProfessorDropdown, setShowProfessorDropdown] = useState(false);
 
@@ -67,16 +68,25 @@ export default function AdminPage() {
     let channel;
 
     async function loadMessages() {
-      const { data, error } = await supabase
-        .from("messages")
-        .select(MESSAGE_SELECT)
-        .in("status", ["pending", "approved"])
-        .order("created_at", { ascending: false });
+      const [{ data, error }, { data: links }] = await Promise.all([
+        supabase
+          .from("messages")
+          .select(MESSAGE_SELECT)
+          .in("status", ["pending", "approved"])
+          .order("created_at", { ascending: false }),
+        supabase.from("professor_programs").select("professor_id, programs(id, code, name)"),
+      ]);
 
       if (error) {
         setLoadError(error.message);
         return;
       }
+      const byProfessor = {};
+      (links || []).forEach((link) => {
+        if (!link.programs) return;
+        (byProfessor[link.professor_id] ||= []).push(link.programs);
+      });
+      setProfessorPrograms(byProfessor);
       setLoadError("");
       setMessages(data || []);
     }
@@ -121,6 +131,12 @@ export default function AdminPage() {
     [messages]
   );
 
+  const programsFor = (msg) => {
+    const linked = professorPrograms[msg.professor_id];
+    if (linked?.length) return linked;
+    return msg.professors?.programs ? [msg.professors.programs] : [];
+  };
+
   const allProfessors = useMemo(() => {
     const profMap = new Map();
     messages.forEach((msg) => {
@@ -128,22 +144,22 @@ export default function AdminPage() {
         profMap.set(msg.professor_id, {
           id: msg.professor_id,
           name: msg.professors.display_name,
-          program: msg.professors.programs,
+          programs: programsFor(msg),
         });
       }
     });
     return Array.from(profMap.values()).sort((a, b) => a.name.localeCompare(b.name));
-  }, [messages]);
+  }, [messages, professorPrograms]);
 
   const allPrograms = useMemo(() => {
     const progMap = new Map();
     messages.forEach((msg) => {
-      if (msg.professors?.programs && !progMap.has(msg.professors.programs.code)) {
-        progMap.set(msg.professors.programs.code, msg.professors.programs);
-      }
+      programsFor(msg).forEach((program) => {
+        if (!progMap.has(program.code)) progMap.set(program.code, program);
+      });
     });
     return Array.from(progMap.values()).sort((a, b) => a.code.localeCompare(b.code));
-  }, [messages]);
+  }, [messages, professorPrograms]);
 
   const searchedProfessors = useMemo(() => {
     return allProfessors.filter((prof) =>
@@ -166,16 +182,15 @@ export default function AdminPage() {
 
     // Filter by program
     if (programFilter) {
-      filtered = filtered.filter(
-        (item) =>
-          item.professors?.programs?.code === programFilter ||
-          item.professors?.program_id === programFilter ||
-          item.professors?.programs?.id === programFilter
+      filtered = filtered.filter((item) =>
+        programsFor(item).some(
+          (program) => program.code === programFilter || program.id === programFilter
+        )
       );
     }
 
     return filtered;
-  }, [filter, messages, professorFilter, programFilter]);
+  }, [filter, messages, professorFilter, programFilter, professorPrograms]);
 
   function handleUnlock(event) {
     event.preventDefault();
@@ -406,9 +421,9 @@ export default function AdminPage() {
                     className="w-full px-4 py-2.5 text-left transition hover:bg-navy-50 focus:bg-navy-50 focus:outline-none"
                   >
                     <div className="font-medium text-navy-900">{professor.name}</div>
-                    {professor.program && (
+                    {professor.programs.length > 0 && (
                       <div className="text-xs text-navy-500">
-                        {professor.program.code} — {professor.program.name}
+                        {professor.programs.map((p) => p.code).join(", ")}
                       </div>
                     )}
                   </button>
@@ -480,8 +495,8 @@ export default function AdminPage() {
                 <div>
                   <p className="text-sm font-semibold uppercase tracking-widest text-gold-600">
                     For {item.professors?.display_name || "Unknown professor"}
-                    {item.professors?.programs?.code
-                      ? ` · ${item.professors.programs.code}`
+                    {programsFor(item).length
+                      ? ` · ${programsFor(item).map((p) => p.code).join(", ")}`
                       : ""}
                   </p>
                   <p className="mt-1 text-sm text-navy-600">
@@ -524,6 +539,14 @@ export default function AdminPage() {
               <p className="mt-4 whitespace-pre-wrap text-lg leading-7 text-navy-900">
                 {item.message_content}
               </p>
+              {item.image_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={item.image_url}
+                  alt="Attached by student"
+                  className="mt-4 max-h-80 rounded-2xl border border-navy-200"
+                />
+              ) : null}
             </article>
           ))
         )}

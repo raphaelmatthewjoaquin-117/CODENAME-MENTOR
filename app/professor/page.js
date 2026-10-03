@@ -116,7 +116,7 @@ export default function ProfessorPage() {
       setLoadingBoard(true);
       const { data, error } = await supabase
         .from("messages")
-        .select("id, sender_name, message_content, created_at")
+        .select("id, sender_name, message_content, image_url, created_at")
         .eq("professor_id", session.id)
         .eq("status", "approved")
         .order("created_at", { ascending: false });
@@ -309,6 +309,14 @@ export default function ProfessorPage() {
                   <p className={`message-text mt-4 whitespace-pre-wrap text-navy-950 break-words ${style.fontClass}`}>
                     {note.message_content}
                   </p>
+                  {note.image_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={note.image_url}
+                      alt="Attached by student"
+                      className="mt-4 max-h-64 w-full rounded-lg object-cover"
+                    />
+                  ) : null}
 
                   {/* Random doodles - BIGGER AND MORE VISIBLE */}
                   {index % 4 === 0 && (

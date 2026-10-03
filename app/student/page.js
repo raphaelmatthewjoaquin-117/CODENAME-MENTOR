@@ -4,7 +4,17 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const IMAGE_EXTENSIONS = {
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/webp": "webp",
+  "image/gif": "gif",
+};
+
 export default function StudentPage() {
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
   const [programs, setPrograms] = useState([]);
   const [professors, setProfessors] = useState([]);
   const [programId, setProgramId] = useState("");
@@ -28,17 +38,35 @@ export default function StudentPage() {
         return;
       }
 
-      const [{ data: programRows, error: programError }, { data: professorRows, error: professorError }] =
-        await Promise.all([
-          supabase.from("programs").select("id, code, name").order("code"),
-          supabase.from("professors").select("id, display_name, program_id").order("display_name"),
-        ]);
+      const [
+        { data: programRows, error: programError },
+        { data: professorRows, error: professorError },
+        { data: linkRows, error: linkError },
+      ] = await Promise.all([
+        supabase.from("programs").select("id, code, name").order("code"),
+        supabase.from("professors").select("id, display_name, program_id").order("display_name"),
+        supabase.from("professor_programs").select("professor_id, program_id"),
+      ]);
 
-      if (programError || professorError) {
-        setError(programError?.message || professorError?.message);
+      if (programError || professorError || linkError) {
+        setError(programError?.message || professorError?.message || linkError?.message);
       } else {
+        const codeById = new Map((programRows || []).map((p) => [p.id, p.code]));
+        const idsByProfessor = new Map();
+        (linkRows || []).forEach((link) => {
+          const set = idsByProfessor.get(link.professor_id) || new Set();
+          set.add(link.program_id);
+          const code = codeById.get(link.program_id);
+          if (code) set.add(code);
+          idsByProfessor.set(link.professor_id, set);
+        });
         setPrograms(programRows || []);
-        setProfessors(professorRows || []);
+        setProfessors(
+          (professorRows || []).map((professor) => ({
+            ...professor,
+            programKeys: idsByProfessor.get(professor.id) || new Set(),
+          }))
+        );
       }
       setLoadingList(false);
     }
@@ -47,23 +75,40 @@ export default function StudentPage() {
   }, []);
 
   const filteredProfessors = programId
-    ? professors.filter((professor) => {
-        if (!professor.program_id) return false;
-        if (professor.program_id === programId) return true;
-        const matchingProg = programs.find(
-          (p) => p.code === programId || p.id === programId
-        );
-        return (
-          matchingProg &&
-          (professor.program_id === matchingProg.code ||
-            professor.program_id === matchingProg.id)
-        );
-      })
+    ? professors.filter((professor) => professor.programKeys.has(programId))
     : professors;
 
   const searchedProfessors = filteredProfessors.filter((professor) =>
     professor.display_name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  function clearImage() {
+    setImageFile(null);
+    setImagePreview("");
+  }
+
+  function handleImageChange(event) {
+    const file = event.target.files?.[0];
+    setError("");
+    if (!file) {
+      clearImage();
+      return;
+    }
+    if (!IMAGE_EXTENSIONS[file.type]) {
+      setError("Please choose a JPG, PNG, WebP or GIF image.");
+      event.target.value = "";
+      clearImage();
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      setError("Image must be 5 MB or smaller.");
+      event.target.value = "";
+      clearImage();
+      return;
+    }
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -79,10 +124,28 @@ export default function StudentPage() {
     }
 
     setStatus("sending");
+
+    let imageUrl = null;
+    if (imageFile) {
+      const extension = IMAGE_EXTENSIONS[imageFile.type];
+      const path = `${crypto.randomUUID()}.${extension}`;
+      const { error: uploadError } = await supabase.storage
+        .from("message-images")
+        .upload(path, imageFile, { contentType: imageFile.type });
+
+      if (uploadError) {
+        setError(`Image upload failed: ${uploadError.message}`);
+        setStatus("idle");
+        return;
+      }
+      imageUrl = supabase.storage.from("message-images").getPublicUrl(path).data.publicUrl;
+    }
+
     const { error: insertError } = await supabase.from("messages").insert({
       professor_id: professorId,
       sender_name: anonymous || !senderName.trim() ? "Anonymous" : senderName.trim(),
       message_content: message.trim(),
+      image_url: imageUrl,
       status: "pending",
     });
 
@@ -92,6 +155,7 @@ export default function StudentPage() {
       return;
     }
 
+    clearImage();
     setStatus("sent");
     setShowSuccessModal(true);
     setMessage("");
@@ -344,6 +408,35 @@ export default function StudentPage() {
               required
             />
           </label>
+
+          <div className="block">
+            <span className="mb-2 block text-sm font-semibold text-navy-800">
+              Picture (Optional)
+            </span>
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              onChange={handleImageChange}
+              className="w-full rounded-2xl border border-navy-200 bg-navy-50/60 px-4 py-3 text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-navy-800 file:px-3 file:py-1.5 file:text-white"
+            />
+            {imagePreview ? (
+              <div className="mt-3 flex items-start gap-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={imagePreview}
+                  alt="Selected preview"
+                  className="max-h-40 rounded-2xl border border-navy-200"
+                />
+                <button
+                  type="button"
+                  onClick={clearImage}
+                  className="text-sm font-semibold text-rose-700 hover:underline"
+                >
+                  Remove
+                </button>
+              </div>
+            ) : null}
+          </div>
 
           {error ? (
             <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-800">
