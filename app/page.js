@@ -10,7 +10,7 @@ export default function HomePage() {
 
       <header className="relative z-10 flex items-center justify-between">
         <p className="text-sm font-semibold tracking-[0.2em] text-navy-600">
-           PROFESSOR'S DAY
+           PROFESSOR&apos;S DAY
         </p>
         <Link
           href="/admin"
