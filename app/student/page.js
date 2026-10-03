@@ -168,11 +168,11 @@ export default function StudentPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col px-6 py-10">
+    <main className="mx-auto flex min-h-screen max-w-3xl flex-col px-4 py-8 sm:px-6 sm:py-12">
       {/* Success Modal */}
       {showSuccessModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="modal-appear mx-4 w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl">
+          <div className="modal-appear mx-4 w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl ring-1 ring-navy-200">
             <div className="flex flex-col items-center text-center">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100">
                 <svg
@@ -196,7 +196,7 @@ export default function StudentPage() {
                 Your appreciation note has been submitted and is awaiting admin approval.
                 Once approved, it will appear on your professor&apos;s corkboard.
               </p>
-              <div className="mt-6 flex w-full gap-3">
+              <div className="mt-6 flex w-full flex-col gap-3 sm:flex-row">
                 <button
                   type="button"
                   onClick={() => setShowSuccessModal(false)}
@@ -216,23 +216,39 @@ export default function StudentPage() {
         </div>
       )}
 
-      <Link href="/" className="text-sm font-medium text-navy-600 hover:underline">
+      <Link
+        href="/"
+        className="group inline-flex w-fit items-center gap-2 rounded-full bg-white/70 px-4 py-2 text-sm font-semibold text-navy-700 shadow-sm ring-1 ring-navy-200/80 transition hover:bg-white hover:text-navy-900"
+      >
+        <svg className="h-4 w-4 transition group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        </svg>
         Back to home
       </Link>
 
-      <section className="mt-8 rounded-3xl bg-white/90 p-8 shadow-xl shadow-navy-900/10 ring-1 ring-navy-200">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-yellow-600">
-          Student Portal
-        </p>
-        <h1 className="mt-3 text-4xl font-semibold text-navy-900">
-          Write a thank-you note
-        </h1>
-        <p className="mt-3 text-navy-600">
-          Your message waits for a quick review, then appears on your
-          professor&apos;s corkboard.
-        </p>
+      <section className="student-portal-card mt-6 rounded-3xl bg-white/95 shadow-xl shadow-navy-900/10 ring-1 ring-navy-200">
+        <div className="relative z-10 p-6 sm:p-8 md:p-10">
+          <div className="flex items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-yellow-400 text-navy-900 shadow-sm">
+              <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M7.5 8.25h9m-9 3.75h6m-8.25 8.25L3 21l.75-4.5A8.25 8.25 0 1112 20.25c-1.45 0-2.82-.37-4.01-1.02z" />
+              </svg>
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs font-bold uppercase tracking-[0.18em] text-yellow-700">
+                Student Portal
+              </p>
+              <h1 className="mt-1 text-3xl font-bold tracking-tight text-navy-900 sm:text-4xl">
+                Write a thank-you note
+              </h1>
+            </div>
+          </div>
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-navy-600">
+            Share a little gratitude. Your note will be reviewed before it appears
+            on your professor&apos;s corkboard.
+          </p>
 
-        <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="relative">
             <label className="block">
               <span className="mb-2 block text-sm font-semibold text-navy-800">
@@ -256,7 +272,7 @@ export default function StudentPage() {
                         ? "Search for a professor..."
                         : "No professors available yet"
                   }
-                  className="w-full rounded-2xl border border-navy-200 bg-navy-50/60 px-4 py-3 pr-10 outline-none ring-gold-400 transition focus:border-navy-300 focus:bg-white focus:ring-2"
+                  className="student-form-control w-full rounded-2xl border border-navy-200 bg-white/80 px-4 py-3 pr-10"
                   required={!professorId}
                 />
                 <svg
@@ -358,7 +374,7 @@ export default function StudentPage() {
                 setProfessorName("");
                 setSearchQuery("");
               }}
-              className="w-full rounded-2xl border border-navy-200 bg-navy-50/60 px-4 py-3 outline-none ring-gold-400 focus:ring-2"
+              className="student-form-control w-full rounded-2xl border border-navy-200 bg-white/80 px-4 py-3"
             >
               <option value="">
                 {loadingList ? "Loading programs..." : "All programs"}
@@ -371,29 +387,31 @@ export default function StudentPage() {
             </select>
           </label>
 
-          <label className="block">
-            <span className="mb-2 block text-sm font-semibold text-navy-800">
-              Your Name
-            </span>
-            <input
-              type="text"
-              value={senderName}
-              disabled={anonymous}
-              onChange={(event) => setSenderName(event.target.value)}
-              placeholder={anonymous ? "Anonymous" : "e.g. Matthew from BS-IT 4th yr"}
-              className="w-full rounded-2xl border border-navy-200 bg-navy-50/60 px-4 py-3 outline-none ring-gold-400 focus:ring-2 disabled:bg-stone-100 disabled:text-stone-400"
-            />
-          </label>
-
-          <label className="flex items-center gap-3 text-sm font-medium text-navy-800">
-            <input
-              type="checkbox"
-              checked={anonymous}
-              onChange={(event) => setAnonymous(event.target.checked)}
-              className="h-4 w-4 accent-navy-800"
-            />
-            Submit anonymously
-          </label>
+          <div className="grid gap-6 sm:grid-cols-2">
+            <label className="block">
+              <span className="mb-2 block text-sm font-semibold text-navy-800">
+                Your Name
+              </span>
+              <input
+                type="text"
+                value={senderName}
+                disabled={anonymous}
+                onChange={(event) => setSenderName(event.target.value)}
+                placeholder={anonymous ? "Anonymous" : "e.g. Matthew from BS-IT 4th yr"}
+                className="student-form-control w-full rounded-2xl border border-navy-200 bg-white/80 px-4 py-3 disabled:bg-stone-100 disabled:text-stone-400"
+              />
+              <label className="mt-3 inline-flex items-center gap-2.5 text-sm font-medium text-navy-700">
+                <input
+                  type="checkbox"
+                  checked={anonymous}
+                  onChange={(event) => setAnonymous(event.target.checked)}
+                  className="h-4 w-4 rounded accent-navy-800"
+                />
+                Submit anonymously
+              </label>
+            </label>
+            
+          </div>
 
           <label className="block">
             <span className="mb-2 block text-sm font-semibold text-navy-800">
@@ -404,7 +422,7 @@ export default function StudentPage() {
               onChange={(event) => setMessage(event.target.value)}
               rows={6}
               placeholder="Thank you for the patience, the late office hours, and the way you made hard ideas feel possible."
-              className="w-full resize-y rounded-2xl border border-navy-200 bg-navy-50/60 px-4 py-3 outline-none ring-gold-400 focus:ring-2"
+              className="student-form-control w-full resize-y rounded-2xl border border-navy-200 bg-white/80 px-4 py-3"
               required
             />
           </label>
@@ -417,7 +435,7 @@ export default function StudentPage() {
               type="file"
               accept="image/jpeg,image/png,image/webp,image/gif"
               onChange={handleImageChange}
-              className="w-full rounded-2xl border border-navy-200 bg-navy-50/60 px-4 py-3 text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-navy-800 file:px-3 file:py-1.5 file:text-white"
+              className="student-form-control w-full rounded-2xl border border-dashed border-navy-300 bg-white/80 px-4 py-3 text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-navy-800 file:px-3 file:py-1.5 file:font-semibold file:text-white file:transition hover:file:bg-navy-700"
             />
             {imagePreview ? (
               <div className="mt-3 flex items-start gap-3">
@@ -439,7 +457,7 @@ export default function StudentPage() {
           </div>
 
           {error ? (
-            <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm text-rose-800">
+            <p role="alert" className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
               {error}
             </p>
           ) : null}
@@ -447,11 +465,12 @@ export default function StudentPage() {
           <button
             type="submit"
             disabled={status === "sending"}
-            className="w-full rounded-2xl bg-yellow-400 px-4 py-3 font-semibold text-navy-900 transition hover:bg-yellow-300 disabled:opacity-60"
+            className="w-full rounded-2xl bg-navy-900 px-4 py-3.5 font-semibold text-white shadow-md shadow-navy-900/15 transition hover:-translate-y-0.5 hover:bg-navy-800 hover:shadow-lg focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-yellow-400/50 disabled:cursor-wait disabled:opacity-60"
           >
             {status === "sending" ? "Sending..." : "Send appreciation"}
           </button>
         </form>
+        </div>
       </section>
     </main>
   );

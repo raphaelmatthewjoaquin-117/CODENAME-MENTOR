@@ -3,6 +3,7 @@ import Link from "next/link";
 export default function HomePage() {
   return (
     <main className="relative mx-auto flex min-h-screen max-w-6xl flex-col px-6 py-10">
+      <div className="home-tiger-bg" aria-hidden="true" />
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -left-10 top-16 h-40 w-40 rounded-full bg-gold-200/50 blur-3xl" />
         <div className="absolute right-0 top-24 h-48 w-48 rounded-full bg-navy-200/40 blur-3xl" />

@@ -43,6 +43,65 @@ body {
     inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
+.student-portal-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.home-tiger-bg {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  background-image: url("/images/roar-higher.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 960px auto;
+  mix-blend-mode: multiply;
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+.student-portal-card::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background-image: url("/images/roar-higher.png");
+  background-position: right 1rem center;
+  background-repeat: no-repeat;
+  background-size: 608px auto;
+  content: "";
+  opacity: 0.3;
+  mix-blend-mode: multiply;
+  mask-image: linear-gradient(90deg, transparent 8%, rgba(0, 0, 0, 0.12) 36%, #000 70%);
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .home-tiger-bg {
+    opacity: 0.12;
+  }
+
+  .student-portal-card::before {
+    opacity: 0.2;
+    mask-image: linear-gradient(90deg, transparent 4%, rgba(0, 0, 0, 0.08) 38%, #000 78%);
+  }
+}
+
+.student-form-control {
+  outline: none;
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.student-form-control:focus {
+  border-color: var(--gold);
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.2);
+}
+
 .sticky-note-dynamic {
   position: relative;
   box-shadow:
