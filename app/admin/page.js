@@ -51,6 +51,7 @@ export default function AdminPage() {
   const [professorPrograms, setProfessorPrograms] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
   const [showProfessorDropdown, setShowProfessorDropdown] = useState(false);
+  const [allProfessorsFromDb, setAllProfessorsFromDb] = useState([]);
 
   useEffect(() => {
     const stored = sessionStorage.getItem(ADMIN_SESSION_KEY);
@@ -68,18 +69,30 @@ export default function AdminPage() {
     let channel;
 
     async function loadMessages() {
-      const [{ data, error }, { data: links }] = await Promise.all([
+      const [
+        { data, error },
+        { data: links },
+        { data: profRows, error: profError },
+      ] = await Promise.all([
         supabase
           .from("messages")
           .select(MESSAGE_SELECT)
           .in("status", ["pending", "approved"])
           .order("created_at", { ascending: false }),
         supabase.from("professor_programs").select("professor_id, programs(id, code, name)"),
+        supabase
+          .from("professors")
+          .select("id, display_name")
+          .order("display_name")
+          .limit(1000),
       ]);
 
       if (error) {
         setLoadError(error.message);
         return;
+      }
+      if (profError) {
+        console.error("Failed to load professors:", profError.message);
       }
       const byProfessor = {};
       (links || []).forEach((link) => {
@@ -87,6 +100,7 @@ export default function AdminPage() {
         (byProfessor[link.professor_id] ||= []).push(link.programs);
       });
       setProfessorPrograms(byProfessor);
+      setAllProfessorsFromDb(profRows || []);
       setLoadError("");
       setMessages(data || []);
     }
@@ -139,6 +153,15 @@ export default function AdminPage() {
 
   const allProfessors = useMemo(() => {
     const profMap = new Map();
+    // Include every professor from the database
+    allProfessorsFromDb.forEach((prof) => {
+      profMap.set(prof.id, {
+        id: prof.id,
+        name: prof.display_name,
+        programs: professorPrograms[prof.id] || [],
+      });
+    });
+    // Also include any that only appear via messages (shouldn't happen, but safe)
     messages.forEach((msg) => {
       if (msg.professors && !profMap.has(msg.professor_id)) {
         profMap.set(msg.professor_id, {
@@ -149,7 +172,8 @@ export default function AdminPage() {
       }
     });
     return Array.from(profMap.values()).sort((a, b) => a.name.localeCompare(b.name));
-  }, [messages, professorPrograms]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages, professorPrograms, allProfessorsFromDb]);
 
   const allPrograms = useMemo(() => {
     const progMap = new Map();
@@ -159,7 +183,47 @@ export default function AdminPage() {
       });
     });
     return Array.from(progMap.values()).sort((a, b) => a.code.localeCompare(b.code));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages, professorPrograms]);
+
+  const professorStats = useMemo(() => {
+    const statsMap = new Map();
+
+    // Seed every professor from the database so those with zero messages appear too
+    allProfessorsFromDb.forEach((prof) => {
+      statsMap.set(prof.id, {
+        id: prof.id,
+        name: prof.display_name,
+        programs: professorPrograms[prof.id] || [],
+        total: 0,
+        pending: 0,
+        approved: 0,
+      });
+    });
+
+    messages.forEach((msg) => {
+      if (!msg.professor_id) return;
+
+      if (!statsMap.has(msg.professor_id)) {
+        statsMap.set(msg.professor_id, {
+          id: msg.professor_id,
+          name: msg.professors?.display_name || "Unknown",
+          programs: programsFor(msg),
+          total: 0,
+          pending: 0,
+          approved: 0,
+        });
+      }
+
+      const stats = statsMap.get(msg.professor_id);
+      stats.total++;
+      if (msg.status === "pending") stats.pending++;
+      if (msg.status === "approved") stats.approved++;
+    });
+
+    return Array.from(statsMap.values()).sort((a, b) => b.total - a.total || a.name.localeCompare(b.name));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages, professorPrograms, allProfessorsFromDb]);
 
   const searchedProfessors = useMemo(() => {
     return allProfessors.filter((prof) =>
@@ -190,6 +254,7 @@ export default function AdminPage() {
     }
 
     return filtered;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, messages, professorFilter, programFilter, professorPrograms]);
 
   function handleUnlock(event) {
@@ -277,6 +342,7 @@ export default function AdminPage() {
     { key: "pending", label: `Pending (${counts.pending})` },
     { key: "approved", label: `Approved (${counts.approved})` },
     { key: "all", label: `All (${counts.all})` },
+    { key: "professors", label: "Professors" },
   ];
 
   return (
@@ -330,9 +396,10 @@ export default function AdminPage() {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2">
-        {/* Professor Filter */}
-        <div className="relative">
+      {filter !== "professors" && (
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          {/* Professor Filter */}
+          <div className="relative">
           <label className="block">
             <span className="mb-2 block text-sm font-semibold text-navy-800">
               Filter by Professor
@@ -469,6 +536,7 @@ export default function AdminPage() {
           )}
         </div>
       </div>
+      )}
 
       {!isSupabaseConfigured ? (
         <p className="mt-8 rounded-2xl bg-rose-50 p-4 text-rose-800">
@@ -481,12 +549,96 @@ export default function AdminPage() {
       ) : null}
 
       <section className="mt-8 grid gap-4">
-        {visibleMessages.length === 0 ? (
-          <div className="rounded-3xl bg-white/80 p-8 text-navy-600 ring-1 ring-navy-200">
-            No notes in this list yet.
-          </div>
+        {filter === "professors" ? (
+          // Professors view
+          professorStats.length === 0 ? (
+            <div className="rounded-3xl bg-white/80 p-8 text-navy-600 ring-1 ring-navy-200">
+              No professors found in the database.
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {professorStats.map((professor) => (
+                <article
+                  key={professor.id}
+                  className="rounded-3xl bg-white/90 p-6 shadow-sm ring-1 ring-navy-200 hover:shadow-md transition-shadow"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-navy-900">
+                        {professor.name}
+                      </h3>
+                      {professor.programs.length > 0 && (
+                        <p className="mt-1 text-sm text-navy-600">
+                          {professor.programs.map((p) => p.code).join(", ")}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="mt-4 grid grid-cols-3 gap-2">
+                    <div className="rounded-2xl bg-navy-100 px-3 py-2 text-center">
+                      <div className="text-2xl font-bold text-navy-900">
+                        {professor.total}
+                      </div>
+                      <div className="text-xs font-medium text-navy-600">
+                        Total
+                      </div>
+                    </div>
+                    
+                    <div className={`rounded-2xl px-3 py-2 text-center ${
+                      professor.pending > 0 ? "bg-gold-100" : "bg-navy-50"
+                    }`}>
+                      <div className={`text-2xl font-bold ${
+                        professor.pending > 0 ? "text-gold-700" : "text-navy-400"
+                      }`}>
+                        {professor.pending}
+                      </div>
+                      <div className={`text-xs font-medium ${
+                        professor.pending > 0 ? "text-gold-600" : "text-navy-400"
+                      }`}>
+                        Pending
+                      </div>
+                    </div>
+                    
+                    <div className="rounded-2xl bg-emerald-100 px-3 py-2 text-center">
+                      <div className="text-2xl font-bold text-emerald-700">
+                        {professor.approved}
+                      </div>
+                      <div className="text-xs font-medium text-emerald-600">
+                        Approved
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {professor.total > 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setProfessorFilter(professor.id);
+                        setFilter("all");
+                        setSearchQuery("");
+                      }}
+                      className="mt-4 w-full rounded-2xl bg-yellow-400 py-2 text-sm font-semibold text-navy-900 transition hover:bg-yellow-300"
+                    >
+                      View Messages
+                    </button>
+                  ) : (
+                    <div className="mt-4 w-full rounded-2xl bg-navy-100 py-2 text-center text-sm font-medium text-navy-400">
+                      No messages yet
+                    </div>
+                  )}
+                </article>
+              ))}
+            </div>
+          )
         ) : (
-          visibleMessages.map((item) => (
+          // Messages view
+          visibleMessages.length === 0 ? (
+            <div className="rounded-3xl bg-white/80 p-8 text-navy-600 ring-1 ring-navy-200">
+              No notes in this list yet.
+            </div>
+          ) : (
+            visibleMessages.map((item) => (
             <article
               key={item.id}
               className="rounded-3xl bg-white/90 p-6 shadow-sm ring-1 ring-navy-200"
@@ -548,7 +700,8 @@ export default function AdminPage() {
                 />
               ) : null}
             </article>
-          ))
+            ))
+          )
         )}
       </section>
     </main>
